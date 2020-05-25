@@ -12,4 +12,4 @@ then in another terminal
 cd server/frontend
 npm run serve
 ```
-Now you are able to communicate on your localhost.
+Now you are able to communicate on http://localhost:8080/
