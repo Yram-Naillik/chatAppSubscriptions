@@ -1,4 +1,3 @@
-
 <template>
   <div id="app" class="container" style="padding-top: 100px">
     <div class="row justify-content-center">
@@ -16,6 +15,13 @@
                     </dl>
 
                     <hr />
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Type your message..."
+                      v-model="message"
+                      @keyup.enter="sendMessage"
+                    />
                   </div>
                 </div>
               </div>
@@ -32,7 +38,9 @@
                         v-model="username"
                       />
                       <div class="input-group-append">
-                        <button class="btn btn-primary" @click="enterChat">Enter</button>
+                        <button class="btn btn-primary" @click="enterChat">
+                          Enter
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -47,19 +55,49 @@
 </template>
 
 <script>
+import {
+  CHATS_QUERY,
+  SEND_MESSAGE_MUTATION,
+  MESSAGE_SENT_SUBSCRIPTION,
+} from "@/graphql";
 export default {
   name: "app",
   data() {
     return {
       username: "",
       message: "",
-      entered: false
+      entered: false,
     };
+  },
+  apollo: {
+    chats: {
+      query: CHATS_QUERY,
+      subscribeToMore: {
+        document: MESSAGE_SENT_SUBSCRIPTION,
+        updateQuery: (previousData, { subscriptionData }) => {
+          return {
+            chats: [...previousData.chats, subscriptionData.data.messageSent],
+          };
+        },
+      },
+    },
   },
   methods: {
     enterChat() {
       this.entered = !!this.username != "";
-    }
-  }
+    },
+    async sendMessage() {
+      const message = this.message;
+      this.message = "";
+
+      await this.$apollo.mutate({
+        mutation: SEND_MESSAGE_MUTATION,
+        variables: {
+          from: this.username,
+          message,
+        },
+      });
+    },
+  },
 };
 </script>
