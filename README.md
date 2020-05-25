@@ -1,5 +1,6 @@
 # chatAppSubscriptions
 Live chat app with GraphQL Subscriptions
+Based on the Pusher's tutorial : https://pusher.com/tutorials/chat-graphql-subscriptions
 
 # How to run it ? 
 
